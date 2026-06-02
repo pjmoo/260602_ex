@@ -166,10 +166,35 @@
                 <h3>${v.title}</h3>
                 <p>
                     <code>작성자 : ${v.user_id}</code> <br />
-                    <code>작성일시 ${v.created_at}</code>
+                    <code>작성일시 : ${v.created_at}</code>
                 </p>
                 <p>${v.content}</p>
             `;
+          // 버튼 추가 기능
+          const user = await sb.auth.getUser();
+          console.log("user", user);
+          // 어떨 때?
+          if (v.user_id === user.data?.user?.id) {
+            console.log("작성자입니다");
+            const rmBtn = document.createElement("button");
+            rmBtn.textContent = "삭제";
+            rmBtn.addEventListener("click", async () => {
+              // id
+              console.log("[삭제 버튼]", "게시물 ID", v.id);
+              // sb
+              const res = await sb.from("posts").delete().eq("id", v.id);
+              console.log("res", res);
+              if (res.success) {
+                console.log("삭제 성공");
+                await renderPosts();
+              } else {
+                console.log("삭제 실패");
+              }
+            });
+            post.append(rmBtn);
+          } else {
+            console.log("작성자가 아닙니다");
+          }
           postContainer.append(post);
         }
       }
